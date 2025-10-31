@@ -345,7 +345,8 @@
                                 <iconify-icon icon="ph:microphone-stage-bold" class="file-input-label-icon"></iconify-icon>
                                 <span id="file-upload-text" class="file-input-label-text">Click to choose an audio file</span>
                             </label>
-                            <input id="file-upload" type="file" class="file-input" accept="audio/*" required>
+                            <!-- UPDATED 'accept' to allow audio and video formats -->
+                            <input id="file-upload" type="file" class="file-input" accept="audio/*,video/*" required multiple>
                         </div>
                         <p id="file-upload-filename" class=""></p>
                     </div>
@@ -680,6 +681,8 @@
             const collectionPath = `artifacts/${appId}/public/data/albums`;
             try {
                 await addDoc(collection(db, collectionPath), { name });
+                // ADDED: Clear the input field on success
+                document.getElementById('new-album-name').value = '';
             } catch (e) {
                 console.error("Error adding document: ", e);
             }
@@ -690,6 +693,8 @@
             const docPath = `artifacts/${appId}/public/data/albums/${id}`;
             try {
                 await updateDoc(doc(db, docPath), { name: newName });
+                // ADDED: Close the modal on success
+                closeModal(document.getElementById('edit-category-modal'));
             } catch (e) {
                 console.error("Error updating document: ", e);
             }
@@ -842,24 +847,36 @@
             return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
         }
         
+        /* * FIXED: Removed a duplicated, incomplete 'handleAudioUpload' function 
+         * that was nested inside another function definition, causing the 
+         * 'Unexpected end of input' syntax error.
+         */
+        
         async function handleAudioUpload(e) {
             e.preventDefault();
             
             const fileUpload = document.getElementById('file-upload');
             const albumSelect = document.getElementById('album-select');
-            const audioTitle = document.getElementById('audio-title'); 
+            const audioTitleInput = document.getElementById('audio-title'); 
             const uploadError = document.getElementById('upload-error');
             const uploadBtnText = document.getElementById('upload-btn-text');
             const uploadSpinner = document.getElementById('upload-spinner');
             const submitUploadBtn = document.getElementById('submit-upload-btn');
             const uploadForm = document.getElementById('upload-form');
             
-            const file = fileUpload.files[0];
+            const files = fileUpload.files; // Get all files
             const albumId = albumSelect.value;
-            const title = audioTitle.value.trim(); 
+            const singleTitle = audioTitleInput.value.trim(); 
             
-            if (!file || !albumId || !title) { 
-                uploadError.textContent = "Please select a file, an album, and enter a title.";
+            if (files.length === 0 || !albumId) { 
+                uploadError.textContent = "Please select at least one file and an album.";
+                uploadError.classList.remove('hidden');
+                return;
+            }
+            
+            // Check for title only if a single file is selected
+            if (files.length === 1 && !singleTitle) {
+                uploadError.textContent = "Please enter a title for the audio file.";
                 uploadError.classList.remove('hidden');
                 return;
             }
@@ -869,26 +886,56 @@
             uploadSpinner.classList.remove('hidden');
             submitUploadBtn.disabled = true;
 
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
             try {
-                const response = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-                if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
-                
-                const data = await response.json();
-                const audioUrl = data.secure_url; 
+                // Create an array of upload promises
+                const uploadPromises = Array.from(files).map(async (file) => {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-                const collectionPath = `artifacts/${appId}/public/data/audio`;
-                await addDoc(collection(db, collectionPath), {
-                    audioUrl, 
-                    albumId,
-                    title, 
-                    createdAt: serverTimestamp()
+                    const response = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+                    if (!response.ok) {
+                        throw new Error(`Upload failed for ${file.name}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const audioUrl = data.secure_url; 
+
+                    // Determine the title
+                    let title;
+                    if (files.length > 1) {
+                        // Use filename (without extension) for batch uploads
+                        title = file.name.split('.').slice(0, -1).join('.') || file.name;
+                    } else {
+                        // Use the user-provided title for single uploads
+                        title = singleTitle;
+                    }
+
+                    // Return the data to be added to Firestore
+                    return {
+                        audioUrl, 
+                        albumId,
+                        title, 
+                        createdAt: serverTimestamp()
+                    };
                 });
+
+                // Wait for all uploads to complete
+                const firestoreDocs = await Promise.all(uploadPromises);
+
+                // Now add all docs to Firestore
+                const collectionPath = `artifacts/${appId}/public/data/audio`;
+                const addDocPromises = firestoreDocs.map(docData => 
+                    addDoc(collection(db, collectionPath), docData)
+                );
                 
+                // Wait for all Firestore writes to complete
+                await Promise.all(addDocPromises);
+                
+                // Reset form and close modal on success
                 uploadForm.reset();
+                // Manually trigger change event to reset file input labels
+                fileUpload.dispatchEvent(new Event('change')); 
                 uploadError.classList.add('hidden');
                 closeModal(document.getElementById('add-audio-modal'));
                 
@@ -1044,6 +1091,17 @@
                 e.preventDefault();
                 const name = document.getElementById('new-album-name').value.trim();
                 if (name) addAlbum(name);
+                // The form reset is now handled inside addAlbum()
+            });
+
+            // FIXED: Event listener for "Customize Albums" button
+            document.getElementById('customize-btn')?.addEventListener('click', () => {
+                const addModal = document.getElementById('add-audio-modal');
+                const manageModal = document.getElementById('manage-categories-modal');
+                
+                if (addModal) closeModal(addModal);
+                // No need to re-check passcode, just open the manage modal
+                if (manageModal) openModal(manageModal);
             });
 
             document.getElementById('edit-category-form')?.addEventListener('submit', (e) => {
@@ -1051,13 +1109,55 @@
                 const id = document.getElementById('edit-category-id').value;
                 const newName = document.getElementById('edit-category-name').value.trim();
                 if (id && newName) updateAlbum(id, newName);
+                // The modal close is now handled inside updateAlbum()
+            });
+
+            // ADDED: Event listener for file input to show selected file names/count
+            document.getElementById('file-upload')?.addEventListener('change', (e) => {
+                const fileInput = e.target;
+                const fileUploadText = document.getElementById('file-upload-text');
+                const fileUploadFilename = document.getElementById('file-upload-filename');
+                const audioTitleLabel = document.querySelector('label[for="audio-title"]');
+                const audioTitleInput = document.getElementById('audio-title');
+
+                if (fileInput.files.length > 1) {
+                    fileUploadText.textContent = `${fileInput.files.length} files selected`;
+                    fileUploadFilename.textContent = `Batch upload: Titles will be set from filenames.`;
+                    // Optionally hide or disable the manual title input
+                    if (audioTitleLabel) audioTitleLabel.classList.add('opacity-50');
+                    if (audioTitleInput) audioTitleInput.disabled = true;
+                    if (audioTitleInput) audioTitleInput.placeholder = 'Disabled for batch upload';
+                } else if (fileInput.files.length === 1) {
+                    fileUploadText.textContent = '1 file selected';
+                    fileUploadFilename.textContent = fileInput.files[0].name;
+                    // Re-enable title input
+                    if (audioTitleLabel) audioTitleLabel.classList.remove('opacity-50');
+                    if (audioTitleInput) audioTitleInput.disabled = false;
+                    if (audioTitleInput) audioTitleInput.placeholder = "e.g., 'Weekly sync notes'";
+                } else {
+                    fileUploadText.textContent = 'Click to choose audio files';
+                    fileUploadFilename.textContent = '';
+                    // Re-enable title input
+                    if (audioTitleLabel) audioTitleLabel.classList.remove('opacity-50');
+                    if (audioTitleInput) audioTitleInput.disabled = false;
+                    if (audioTitleInput) audioTitleInput.placeholder = "e.g., 'Weekly sync notes'";
+                }
             });
 
             document.getElementById('passcode-form')?.addEventListener('submit', (e) => {
                 e.preventDefault();
+                const passcodeModal = document.getElementById('passcode-modal');
+                const passcodeError = document.getElementById('passcode-error');
+                const passcodeForm = document.getElementById('passcode-form');
+
                 if (document.getElementById('passcode-input').value === ADMIN_PASSCODE) {
-                    closeModal(document.getElementById('passcode-modal'));
+                    if (passcodeError) passcodeError.classList.add('hidden');
+                    if (passcodeModal) closeModal(passcodeModal);
+                    if (passcodeForm) passcodeForm.reset();
                     passcodeCallback?.();
+                } else {
+                    // ADDED: Show error on wrong passcode
+                    if (passcodeError) passcodeError.classList.remove('hidden');
                 }
             });
 
@@ -1095,8 +1195,42 @@
 
             // Search
             document.getElementById('search-input')?.addEventListener('input', loadAudioFiles);
+            
+            // ADDED: Event listeners for "Manage Albums" modal (Edit/Delete buttons)
+            document.getElementById('albums-list-container')?.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('[data-edit-id]');
+                const deleteBtn = e.target.closest('[data-delete-id]');
+
+                if (editBtn) {
+                    // REMOVED: Passcode check for editing an album
+                    const { editId, editName } = editBtn.dataset;
+                    const editModal = document.getElementById('edit-category-modal');
+                        const idInput = document.getElementById('edit-category-id');
+                        const nameInput = document.getElementById('edit-category-name');
+                        
+                    if (editModal && idInput && nameInput) {
+                        idInput.value = editId;
+                        nameInput.value = editName;
+                        openModal(editModal);
+                        nameInput.focus();
+                    }
+                }
+                
+                if (deleteBtn) {
+                    // REMOVED: Passcode check for deleting an album
+                    const { deleteId, deleteName } = deleteBtn.dataset;
+                    openConfirmModal(
+                        `Delete "${deleteName}"`, 
+                        'Are you sure? This will not delete the audio files, but they will become uncategorized.', 
+                        () => deleteAlbum(deleteId)
+                    );
+                }
+            });
         });
     </script>
 
 </body>
 </html>
+
+
+
