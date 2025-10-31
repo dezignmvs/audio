@@ -4,18 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mvs | Dashboard (Audio)</title>
-    
-    <!-- 1. Tailwind CSS CDN -->
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 2. Iconify CDN -->
+
+    <!-- Iconify CDN -->
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-    
-    <!-- 3. FONT PRELOAD (NEW - Fixes flash of unstyled text) -->
+
+    <!-- Font preload -->
     <link rel="preconnect" href="https://api.fontshare.com">
-    <link rel="preload" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&f[]=cabinet-grotesk@400,500,700,800,900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    
-    <!-- 4. Tailwind Configuration (NEW - Makes fonts work) -->
+    <link rel="preload"
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&f[]=cabinet-grotesk@400,500,700,800,900&display=swap"
+          as="style"
+          onload="this.onload=null;this.rel='stylesheet'">
+
+    <!-- Tailwind config (fonts) -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -29,1208 +32,912 @@
             },
         }
     </script>
-    
-    <!-- 5. Styles with FIXED Font Import -->
+
+    <!-- Styles -->
     <style type="text/tailwindcss">
-        /* FIXED: Correct Fontshare URL with all weights */
         @import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&f[]=cabinet-grotesk@400,500,700,800,900&display=swap');
 
         @layer base {
-            /* FIXED: Fonts now work correctly */
             body {
                 font-family: theme('fontFamily.body');
                 @apply bg-gray-50 text-gray-900 antialiased dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300;
             }
-            /* Apply Cabinet Grotesk for headings */
             h1, h2, h3, h4, h5, h6 {
                 font-family: theme('fontFamily.heading');
                 @apply font-semibold;
             }
-            /* Apply new card styles to the gallery grid container */
             #gallery-grid {
                 @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
             }
         }
-        
+
         @layer components {
-            /* NEW AUDIO CARD STYLES */
             .audio-card {
                 @apply relative w-full rounded-lg overflow-hidden shadow-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-body p-4 flex flex-col gap-3 transition-shadow duration-200 hover:shadow-xl border dark:border-gray-700;
             }
-            
-            .audio-card .top-row {
-                @apply flex justify-between items-start;
-            }
-            
-            .audio-card .text-group {
-                @apply flex flex-col leading-tight;
-            }
-            
-            .audio-card .text-group .title {
-                @apply text-lg font-bold font-heading;
-            }
-            
-            .audio-card .text-group .subtitle {
-                @apply text-sm font-light opacity-80 text-gray-600 dark:text-gray-400;
-            }
-            
-            .audio-card .icon-group {
-                @apply flex gap-2.5;
-            }
-            
-            .audio-card .icon-btn {
-                @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 p-1.5 rounded-md cursor-pointer transition-colors duration-200 text-base;
-            }
-            
-            .audio-card .icon-btn:hover {
-                @apply bg-gray-200 dark:bg-gray-600;
-            }
-            
-            .audio-card .icon-btn.trash:hover {
-                @apply bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400;
-            }
+            .audio-card .top-row { @apply flex justify-between items-start; }
+            .audio-card .text-group .title { @apply text-lg font-bold font-heading; }
+            .audio-card .text-group .subtitle { @apply text-sm font-light opacity-80 text-gray-600 dark:text-gray-400; }
+            .audio-card .icon-group { @apply flex gap-2.5; }
+            .audio-card .icon-btn { @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 p-1.5 rounded-md cursor-pointer transition-colors duration-200 text-base; }
+            .audio-card .icon-btn:hover { @apply bg-gray-200 dark:bg-gray-600; }
+            .audio-card .icon-btn.trash:hover { @apply bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400; }
+            .audio-card iconify-icon { @apply text-lg leading-none block; }
 
-            .audio-card iconify-icon {
-                @apply text-lg leading-none block;
-            }
+            .hidden-audio { @apply hidden; }
 
-            /* ADDED: Style for the hidden audio element */
-            .hidden-audio {
-                @apply hidden;
-            }
+            /* Progress bar */
+            .audio-card .progress-bar-wrapper { @apply relative w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full cursor-pointer my-2; }
+            .audio-card .progress-bar-fill { @apply relative h-full bg-blue-500 rounded-full transition-all duration-75 ease-linear; }
+            .audio-card .progress-bar-thumb { @apply absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full border-2 border-white dark:border-gray-800 shadow-md transition-transform; }
+            .audio-card .progress-bar-wrapper:hover .progress-bar-thumb { @apply scale-110; }
 
-            /* --- UPDATED Progress Bar Styles (with Slider Thumb) --- */
-            .audio-card .progress-bar-wrapper {
-                @apply relative w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full cursor-pointer my-2;
-            }
-            .audio-card .progress-bar-fill {
-                @apply relative h-full bg-blue-500 rounded-full transition-all duration-75 ease-linear;
-            }
-            .audio-card .progress-bar-thumb {
-                @apply absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full border-2 border-white dark:border-gray-800 shadow-md transition-transform;
-            }
-            .audio-card .progress-bar-wrapper:hover .progress-bar-thumb {
-                @apply scale-110;
-            }
+            /* Shared icon buttons */
+            .icon-btn { @apply bg-black/50 text-white p-1.5 rounded-md cursor-pointer transition-colors duration-200 text-base; }
+            .icon-btn:hover { @apply bg-white/30; }
+            .icon-btn iconify-icon { @apply text-lg leading-none block; }
 
-            /* Icon Styles (Shared) */
-            .icon-btn {
-                @apply bg-black/50 text-white p-1.5 rounded-md cursor-pointer transition-colors duration-200 text-base;
-            }
-            
-            .icon-btn:hover {
-                @apply bg-white/30;
-            }
-            
-            .icon-btn iconify-icon {
-                @apply text-lg leading-none block;
-            }
-            
-            a.icon-btn {
-                @apply flex items-center justify-center;
-            }
+            .modal-close-btn { @apply text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl transition-colors; }
 
-            /* New Modal Close Button Style */
-            .modal-close-btn {
-                 @apply text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl transition-colors;
-            }
-            
-            /* Dropdown Item */
-            .dropdown-item {
-                @apply block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer;
-            }
-            
-            .dropdown-item-all-albums {
-                @apply bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 font-medium;
-            }
+            .dropdown-item { @apply block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer; }
+            .dropdown-item-all-albums { @apply bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 font-medium; }
 
-            /* Table Styles */
-            .category-table {
-                @apply w-full text-sm text-left text-gray-500 dark:text-gray-400;
-            }
-            .category-table thead th {
-                @apply px-4 py-3 bg-gray-50 dark:bg-gray-700 text-xs text-gray-700 uppercase dark:text-gray-300;
-            }
-            .category-table tbody tr {
-                @apply bg-white dark:bg-gray-800 border-b dark:border-gray-700;
-            }
-            .category-table tbody td {
-                @apply px-4 py-3;
-            }
+            .category-table { @apply w-full text-sm text-left text-gray-500 dark:text-gray-400; }
+            .category-table thead th { @apply px-4 py-3 bg-gray-50 dark:bg-gray-700 text-xs text-gray-700 uppercase dark:text-gray-300; }
+            .category-table tbody tr { @apply bg-white dark:bg-gray-800 border-b dark:border-gray-700; }
+            .category-table tbody td { @apply px-4 py-3; }
         }
-        
+
         @layer utilities {
-            /* Custom utility classes */
-            .file-input-wrapper {
-                @apply relative inline-block w-full;
-            }
-            .file-input-label {
-                @apply flex flex-col items-center justify-center w-full min-h-[150px] px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer transition
-                        dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600
-                        hover:bg-gray-100 hover:border-gray-400 dark:hover:border-gray-500;
-            }
-            .file-input-label-text {
-                @apply text-sm text-gray-600 dark:text-gray-300 mt-2;
-            }
-            .file-input-label-icon {
-                @apply text-4xl text-gray-500 dark:text-gray-400;
-            }
-            .file-input {
-                @apply absolute inset-0 w-full h-full opacity-0 cursor-pointer;
-            }
-            #file-upload-filename {
-                @apply text-sm text-gray-500 dark:text-gray-400 mt-2 text-center truncate;
-            }
+            .file-input-wrapper { @apply relative inline-block w-full; }
+            .file-input-label { @apply flex flex-col items-center justify-center w-full min-h-[150px] px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer transition dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 hover:bg-gray-100 hover:border-gray-400 dark:hover:border-gray-500; }
+            .file-input-label-text { @apply text-sm text-gray-600 dark:text-gray-300 mt-2; }
+            .file-input-label-icon { @apply text-4xl text-gray-500 dark:text-gray-400; }
+            .file-input { @apply absolute inset-0 w-full h-full opacity-0 cursor-pointer; }
+            #file-upload-filename { @apply text-sm text-gray-500 dark:text-gray-400 mt-2 text-center truncate; }
 
-            /* Custom scrollbar for dropdowns */
-            #albums-dropdown-list::-webkit-scrollbar {
-                @apply w-1.5;
-            }
-            #albums-dropdown-list::-webkit-scrollbar-track {
-                @apply bg-transparent;
-            }
-            #albums-dropdown-list::-webkit-scrollbar-thumb {
-                @apply bg-yellow-300 dark:bg-yellow-700 rounded-full;
-            }
+            #albums-dropdown-list::-webkit-scrollbar { @apply w-1.5; }
+            #albums-dropdown-list::-webkit-scrollbar-track { @apply bg-transparent; }
+            #albums-dropdown-list::-webkit-scrollbar-thumb { @apply bg-yellow-300 dark:bg-yellow-700 rounded-full; }
 
-            /* Loading Spinner */
-            .spinner {
-                @apply w-5 h-5 border-2 border-current border-r-transparent rounded-full animate-spin;
-            }
+            .spinner { @apply w-5 h-5 border-2 border-current border-r-transparent rounded-full animate-spin; }
         }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- ================================== -->
-    <!--          NAVBAR                    -->
-    <!-- ================================== -->
-    <nav class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-lg text-gray-900 dark:text-white px-4 sm:px-6 py-3 flex justify-between items-center sticky top-0 z-50 rounded-b-2xl transition-all duration-500">
-        <!-- Left Side: Logo/Title -->
-        <div class="flex items-center gap-3">
-            <span class="font-heading text-xl sm:text-2xl font-semibold ">Dezign.mvs</span>
-        </div>
-        
-        <!-- Right Side: Icons -->
-        <div class="flex items-center gap-2 sm:gap-3">
-            <!-- Theme Toggle -->
-            <button id="theme-toggle-btn" title="Toggle theme"
+<!-- ==================== NAVBAR ==================== -->
+<nav class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-lg text-gray-900 dark:text-white px-4 sm:px-6 py-3 flex justify-between items-center sticky top-0 z-50 rounded-b-2xl transition-all duration-500">
+    <div class="flex items-center gap-3">
+        <span class="font-heading text-xl sm:text-2xl font-semibold">Dezign.mvs</span>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Theme -->
+        <button id="theme-toggle-btn" title="Toggle theme"
                 class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-300/40 dark:border-gray-700/60 bg-white/50 dark:bg-gray-700/60 text-gray-700 dark:text-gray-200 hover:scale-105 hover:bg-white/70 dark:hover:bg-gray-600/70 transition-all duration-300 shadow-sm">
-                <iconify-icon id="theme-icon-light" icon="ph:sun-dim-bold"></iconify-icon>
-                <iconify-icon id="theme-icon-dark" icon="ph:moon-stars-bold" class="hidden"></iconify-icon>
-            </button>
-            
-            <!-- Fullscreen -->
-            <button id="fullscreen-toggle-btn" title="Toggle fullscreen"
+            <iconify-icon id="theme-icon-light" icon="ph:sun-dim-bold"></iconify-icon>
+            <iconify-icon id="theme-icon-dark" icon="ph:moon-stars-bold" class="hidden"></iconify-icon>
+        </button>
+
+        <!-- Fullscreen -->
+        <button id="fullscreen-toggle-btn" title="Toggle fullscreen"
                 class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-300/40 dark:border-gray-700/60 bg-white/50 dark:bg-gray-700/60 text-gray-700 dark:text-gray-200 hover:scale-105 hover:bg-white/70 dark:hover:bg-gray-600/70 transition-all duration-300 shadow-sm">
-                <iconify-icon id="fullscreen-icon-enter" icon="ph:corners-out-bold"></iconify-icon>
-                <iconify-icon id="fullscreen-icon-exit" icon="ph:corners-in-bold" class="hidden"></iconify-icon>
-            </button>
-            
-            <!-- Add Audio -->
-            <button id="add-audio-btn" title="Add Audio"
+            <iconify-icon id="fullscreen-icon-enter" icon="ph:corners-out-bold"></iconify-icon>
+            <iconify-icon id="fullscreen-icon-exit" icon="ph:corners-in-bold" class="hidden"></iconify-icon>
+        </button>
+
+        <!-- Add Audio -->
+        <button id="add-audio-btn" title="Add Audio"
                 class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-300/40 dark:border-gray-700/60 bg-blue-500/80 dark:bg-blue-600/80 text-white hover:scale-105 hover:bg-blue-500 dark:hover:bg-blue-500 transition-all duration-300 shadow-sm">
-                <iconify-icon icon="ph:plus-bold"></iconify-icon>
+            <iconify-icon icon="ph:plus-bold"></iconify-icon>
+        </button>
+    </div>
+</nav>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="container max-w-7xl mx-auto px-4 py-12">
+
+    <header class="text-center mb-10">
+        <h1 class="font-heading text-4xl md:text-5xl mb-2 tracking-tight">AUDIO LIBRARY</h1>
+        <p class="font-body text-lg text-gray-600 dark:text-gray-400">Recording your thoughts</p>
+    </header>
+
+    <!-- Search + Filters -->
+    <div class="flex flex-col md:flex-row gap-4 mb-8 items-center">
+        <div class="relative w-full md:flex-grow">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">
+                <iconify-icon icon="ph:magnifying-glass-bold"></iconify-icon>
+            </span>
+            <input id="search-input" type="text" placeholder="Search audio by title, album..."
+                   class="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition
+                          dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-blue-500">
+        </div>
+
+        <div class="flex-shrink-0 grid grid-cols-1 md:flex gap-3 w-full md:w-auto">
+            <div class="relative w-full md:w-auto">
+                <button id="albums-filter-btn" data-dropdown-toggle="albums-dropdown"
+                        class="w-full bg-white border border-gray-300 rounded-lg shadow-sm px-5 py-3 flex items-center justify-center gap-2 hover:bg-gray-100 transition text-gray-700 font-medium
+                               dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                    <iconify-icon icon="ph:stack-bold" class="text-yellow-500"></iconify-icon>
+                    <span id="albums-filter-text">Albums</span>
+                    <iconify-icon icon="ph:caret-down-bold"></iconify-icon>
+                </button>
+                <div id="albums-dropdown"
+                     class="absolute top-full left-0 mt-2 w-full md:w-38 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-lg shadow-lg z-20 hidden overflow-hidden">
+                    <div id="albums-dropdown-list" class="py-1 max-h-60 overflow-y-auto">
+                        <span class="dropdown-item">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery -->
+    <div id="gallery-grid">
+        <p id="gallery-loading" class="text-gray-500 dark:text-gray-400 col-span-full text-center">Loading audio files...</p>
+    </div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+<div id="modal-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] hidden"></div>
+
+<!-- Add Audio Modal -->
+<div id="add-audio-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-2xl transform transition-all scale-95 opacity-0">
+        <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+            <h3 class="font-heading text-lg">Add New Audio</h3>
+            <div class="flex items-center gap-2">
+                <button id="customize-btn"
+                        class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 transition text-sm text-gray-700 font-medium dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                    <iconify-icon icon="ph:gear-six-bold" class="text-lg"></iconify-icon>
+                    <span>Customize Albums</span>
+                </button>
+                <button data-close-modal="add-audio-modal" class="modal-close-btn">
+                    <iconify-icon icon="ph:x-bold"></iconify-icon>
+                </button>
+            </div>
+        </div>
+
+        <form id="upload-form" class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <label for="album-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Album</label>
+                        <select id="album-select"
+                                class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
+                            <option value="" disabled selected>Loading albums...</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="audio-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                        <input id="audio-title" type="text" placeholder="e.g., 'Weekly sync notes'"
+                               class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               required>
+                    </div>
+
+                    <div id="upload-error" class="text-red-500 text-sm hidden"></div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audio Upload</label>
+                    <div class="file-input-wrapper">
+                        <label for="file-upload" class="file-input-label">
+                            <iconify-icon icon="ph:microphone-stage-bold" class="file-input-label-icon"></iconify-icon>
+                            <span id="file-upload-text" class="file-input-label-text">Click to choose an audio file</span>
+                        </label>
+                        <input id="file-upload" type="file" class="file-input" accept="audio/*,video/*" required multiple>
+                    </div>
+                    <p id="file-upload-filename" class=""></p>
+                </div>
+            </div>
+
+            <div class="pt-6 flex justify-end gap-3 border-t dark:border-gray-700 mt-6">
+                <button type="button" data-close-modal="add-audio-modal"
+                        class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+                    Cancel
+                </button>
+                <button type="submit" id="submit-upload-btn"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center min-w-[80px]">
+                    <span id="upload-btn-text">Upload</span>
+                    <div id="upload-spinner" class="spinner hidden"></div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Manage Albums Modal -->
+<div id="manage-categories-modal" class="fixed inset-0 z-[110] flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-lg transform transition-all scale-95 opacity-0">
+        <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+            <h3 class="font-heading text-lg">Manage Albums</h3>
+            <button data-close-modal="manage-categories-modal" class="modal-close-btn">
+                <iconify-icon icon="ph:x-bold"></iconify-icon>
             </button>
         </div>
-    </nav>
 
-    <!-- ================================== -->
-    <!--           AUDIO CONTENT            -->
-    <!-- ================================== -->
-    <div class="container max-w-7xl mx-auto px-4 py-12">
-
-        <!-- Header Section -->
-        <header class="text-center mb-10">
-            <h1 class="font-heading text-4xl md:text-5xl mb-2 tracking-tight">AUDIO LIBRARY</h1>
-            <p class="font-body text-lg text-gray-600 dark:text-gray-400">Recording your thoughts</p>
-        </header>
-
-        <!-- Filter and Search Section -->
-        <div class="flex flex-col md:flex-row gap-4 mb-8 items-center">
-            
-            <!-- Search Bar -->
-            <div class="relative w-full md:flex-grow">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">
-                    <iconify-icon icon="ph:magnifying-glass-bold"></iconify-icon>
-                </span>
-                <input 
-                    id="search-input"
-                    type="text" 
-                    placeholder="Search audio by title, album..." 
-                    class="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition
-                           dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-blue-500"
-                >
-            </div>
-
-            <!-- Filter Buttons -->
-            <div class="flex-shrink-0 grid grid-cols-1 md:flex gap-3 w-full md:w-auto">
-                
-                <!-- Albums Dropdown -->
-                <div class="relative w-full md:w-auto">
-                    <button id="albums-filter-btn" data-dropdown-toggle="albums-dropdown" class="w-full bg-white border border-gray-300 rounded-lg shadow-sm px-5 py-3 flex items-center justify-center gap-2 hover:bg-gray-100 transition text-gray-700 font-medium
-                                    dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
-                        <iconify-icon icon="ph:stack-bold" class="text-yellow-500"></iconify-icon>
-                        <span id="albums-filter-text">Albums</span>
-                        <iconify-icon icon="ph:caret-down-bold"></iconify-icon>
-                    </button>
-                    <!-- Dropdown Menu -->
-                    <div id="albums-dropdown" class="absolute top-full left-0 mt-2 w-full md:w-38 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-lg shadow-lg z-20 hidden overflow-hidden">
-                        <div id="albums-dropdown-list" class="py-1 max-h-60 overflow-y-auto">
-                            <span class="dropdown-item">Loading...</span>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-
-        <!-- Gallery Grid -->
-        <div id="gallery-grid">
-            <p id="gallery-loading" class="text-gray-500 dark:text-gray-400 col-span-full text-center">Loading audio files...</p>
-        </div>
-
-    </div>
-
-    <!-- ================================== -->
-    <!--              MODALS                -->
-    <!-- ================================== -->
-
-    <!-- Modal Overlay -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] hidden"></div>
-
-    <!-- 1. Add Audio Modal -->
-    <div id="add-audio-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-2xl transform transition-all scale-95 opacity-0">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
-                <h3 class="font-heading text-lg">Add New Audio</h3>
-                <div class="flex items-center gap-2">
-                    <button id="customize-btn" class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 transition text-sm text-gray-700 font-medium dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
-                        <iconify-icon icon="ph:gear-six-bold" class="text-lg"></iconify-icon>
-                        <span>Customize Albums</span>
-                    </button>
-                    <button data-close-modal="add-audio-modal" class="modal-close-btn">
-                        <iconify-icon icon="ph:x-bold"></iconify-icon>
-                    </button>
-                </div>
-            </div>
-            <!-- Modal Body -->
-            <form id="upload-form" class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Left Column: Album & Title -->
-                    <div class="space-y-4">
-                        <!-- Album Dropdown -->
-                        <div>
-                            <label for="album-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Album</label>
-                            <select id="album-select" class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="" disabled selected>Loading albums...</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Title Input -->
-                        <div>
-                            <label for="audio-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
-                            <input id="audio-title" type="text" placeholder="e.g., 'Weekly sync notes'" class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
-                        
-                        <div id="upload-error" class="text-red-500 text-sm hidden"></div>
-                    </div>
-
-                    <!-- Right Column: Audio Upload -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audio Upload</label>
-                        <div class="file-input-wrapper">
-                            <label for="file-upload" class="file-input-label">
-                                <iconify-icon icon="ph:microphone-stage-bold" class="file-input-label-icon"></iconify-icon>
-                                <span id="file-upload-text" class="file-input-label-text">Click to choose an audio file</span>
-                            </label>
-                            <!-- UPDATED 'accept' to allow audio and video formats -->
-                            <input id="file-upload" type="file" class="file-input" accept="audio/*,video/*" required multiple>
-                        </div>
-                        <p id="file-upload-filename" class=""></p>
-                    </div>
-                </div>
-                
-                <!-- Modal Footer -->
-                <div class="pt-6 flex justify-end gap-3 border-t dark:border-gray-700 mt-6">
-                    <button type="button" data-close-modal="add-audio-modal" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">Cancel</button>
-                    <button type="submit" id="submit-upload-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center min-w-[80px]">
-                        <span id="upload-btn-text">Upload</span>
-                        <div id="upload-spinner" class="spinner hidden"></div>
-                    </button>
-                </div>
+        <div class="space-y-4 p-6">
+            <h4 class="font-heading text-base mb-2">Add New Album</h4>
+            <form id="add-album-form" class="flex gap-2">
+                <input id="new-album-name" type="text" placeholder="New album name..."
+                       class="flex-grow p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       required>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center min-w-[60px]">
+                    Add
+                </button>
             </form>
+
+            <h4 class="font-heading text-base pt-4 border-t dark:border-gray-700 mt-4">Existing Albums</h4>
+            <div id="albums-list-container" class="max-h-60 overflow-y-auto relative rounded-lg border dark:border-gray-700">
+                <table class="category-table">
+                    <thead class="sticky top-0">
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col" class="text-right">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="albums-list-body">
+                    <tr><td colspan="2" class="text-center p-4 text-gray-500 dark:text-gray-400">Loading albums...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- 2. Manage Albums Modal -->
-    <div id="manage-categories-modal" class="fixed inset-0 z-[110] flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-lg transform transition-all scale-95 opacity-0">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
-                <h3 class="font-heading text-lg">Manage Albums</h3>
-                <button data-close-modal="manage-categories-modal" class="modal-close-btn">
-                    <iconify-icon icon="ph:x-bold"></iconify-icon>
+<!-- Edit Album Modal -->
+<div id="edit-category-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-sm transform transition-all scale-95 opacity-0">
+        <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+            <h3 id="edit-modal-title" class="font-heading text-lg">Edit Album Name</h3>
+            <button data-close-modal="edit-category-modal" class="modal-close-btn">
+                <iconify-icon icon="ph:x-bold"></iconify-icon>
+            </button>
+        </div>
+        <form id="edit-category-form" class="p-6 space-y-4">
+            <input id="edit-category-id" type="hidden">
+            <input id="edit-category-type" type="hidden" value="albums">
+            <div>
+                <label for="edit-category-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                <input id="edit-category-name" type="text"
+                       class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       required>
+            </div>
+            <div class="pt-4 flex justify-end gap-3">
+                <button type="button" data-close-modal="edit-category-modal"
+                        class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Save
                 </button>
             </div>
-            <!-- Modal Body -->
-            <div id="tab-content-albums" class="tab-content space-y-4 p-6">
-                <h4 class="font-heading text-base mb-2">Add New Album</h4>
-                <form id="add-album-form" class="flex gap-2">
-                    <input id="new-album-name" type="text" placeholder="New album name..." class="flex-grow p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center min-w-[60px]">Add</button>
-                </form>
-                
-                <h4 class="font-heading text-base pt-4 border-t dark:border-gray-700 mt-4">Existing Albums</h4>
-                <div id="albums-list-container" class="max-h-60 overflow-y-auto relative rounded-lg border dark:border-gray-700">
-                    <table class="category-table">
-                        <thead class="sticky top-0">
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col" class="text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="albums-list-body">
-                            <tr><td colspan="2" class="text-center p-4 text-gray-500 dark:text-gray-400">Loading albums...</td></tr>
-                        </tbody>
-                    </table>
+        </form>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-sm transform transition-all scale-95 opacity-0">
+        <div class="p-6">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30">
+                    <iconify-icon icon="ph:warning-bold" class="text-2xl text-red-600 dark:text-red-400"></iconify-icon>
+                </div>
+                <div class="flex-1">
+                    <h3 id="confirm-modal-title" class="font-heading text-lg">Are you sure?</h3>
+                    <p id="confirm-modal-text" class="text-sm text-gray-600 dark:text-gray-400 mt-1">This action cannot be undone.</p>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 3. Edit Album Modal -->
-    <div id="edit-category-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-sm transform transition-all scale-95 opacity-0">
-            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
-                <h3 id="edit-modal-title" class="font-heading text-lg">Edit Album Name</h3>
-                <button data-close-modal="edit-category-modal" class="modal-close-btn">
-                    <iconify-icon icon="ph:x-bold"></iconify-icon>
+            <div class="pt-6 flex justify-end gap-3">
+                <button id="confirm-modal-cancel"
+                        class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+                    Cancel
+                </button>
+                <button id="confirm-modal-confirm"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                    Delete
                 </button>
             </div>
-            <form id="edit-category-form" class="p-6 space-y-4">
-                <input id="edit-category-id" type="hidden">
-                <input id="edit-category-type" type="hidden" value="albums">
-                <div>
-                    <label for="edit-category-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
-                    <input id="edit-category-name" type="text" class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                </div>
-                <div class="pt-4 flex justify-end gap-3">
-                    <button type="button" data-close-modal="edit-category-modal" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Save</button>
-                </div>
-            </form>
         </div>
     </div>
+</div>
 
-    <!-- 4. Custom Confirmation Modal -->
-    <div id="confirm-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-sm transform transition-all scale-95 opacity-0">
-            <div class="p-6">
-                <div class="flex items-start gap-3">
-                    <div class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30">
-                        <iconify-icon icon="ph:warning-bold" class="text-2xl text-red-600 dark:text-red-400"></iconify-icon>
-                    </div>
-                    <div class="flex-1">
-                        <h3 id="confirm-modal-title" class="font-heading text-lg">Are you sure?</h3>
-                        <p id="confirm-modal-text" class="text-sm text-gray-600 dark:text-gray-400 mt-1">This action cannot be undone.</p>
-                    </div>
-                </div>
-                <div class="pt-6 flex justify-end gap-3">
-                    <button id="confirm-modal-cancel" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">Cancel</button>
-                    <button id="confirm-modal-confirm" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Delete</button>
-                </div>
-            </div>
+<!-- Passcode Modal -->
+<div id="passcode-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-sm transform transition-all scale-95 opacity-0">
+        <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+            <h3 class="font-heading text-lg">Admin Access Required</h3>
+            <button data-close-modal="passcode-modal" class="modal-close-btn">
+                <iconify-icon icon="ph:x-bold"></iconify-icon>
+            </button>
         </div>
-    </div>
-    
-    <!-- 6. Passcode Modal -->
-    <div id="passcode-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-sm transform transition-all scale-95 opacity-0">
-            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
-                <h3 id="passcode-modal-title" class="font-heading text-lg">Admin Access Required</h3>
-                <button data-close-modal="passcode-modal" class="modal-close-btn">
-                    <iconify-icon icon="ph:x-bold"></iconify-icon>
+        <form id="passcode-form" class="p-6 space-y-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the passcode to perform this action.</p>
+            <div>
+                <label for="passcode-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Passcode</label>
+                <input id="passcode-input" type="password"
+                       class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       required>
+                <p id="passcode-error" class="text-red-500 text-sm mt-1 hidden">Incorrect passcode.</p>
+            </div>
+            <div class="pt-4 flex justify-end gap-3">
+                <button type="button" data-close-modal="passcode-modal"
+                        class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Submit
                 </button>
             </div>
-            <form id="passcode-form" class="p-6 space-y-4">
-                <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the passcode to perform this action.</p>
-                <div>
-                    <label for="passcode-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Passcode</label>
-                    <input id="passcode-input" type="password" class="w-full p-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <p id="passcode-error" class="text-red-500 text-sm mt-1 hidden">Incorrect passcode.</p>
-                </div>
-                <div class="pt-4 flex justify-end gap-3">
-                    <button type="button" data-close-modal="passcode-modal" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Submit</button>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
+</div>
 
-    <!-- ================================== -->
-    <!--            JAVASCRIPT              -->
-    <!-- ================================== -->
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, 
-            signInAnonymously, 
-            signInWithCustomToken, 
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore, 
-            doc, 
-            collection, 
-            addDoc, 
-            getDoc, 
-            setDoc, 
-            updateDoc, 
-            deleteDoc, 
-            onSnapshot, 
-            query, 
-            where, 
-            serverTimestamp,
-            orderBy
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<!-- ==================== JAVASCRIPT ==================== -->
+<script type="module">
+    // Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+        getAuth, signInAnonymously, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+        getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
+        onSnapshot, query, where, orderBy, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- CONSTANTS ---
-        const CLOUDINARY_CLOUD_NAME = "duexban9y";
-        const CLOUDINARY_UPLOAD_PRESET = "imageuploader";
-        const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`;
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyDbaF6Gb1lNGY9PQbV_9FXa9oOpC7ZiQRU",
-            authDomain: "nodemailer-445010.firebaseapp.com",
-            projectId: "nodemailer-445010",
-            storageBucket: "nodemailer-445010.firebasestorage.app",
-            messagingSenderId: "785480577605",
-            appId: "1:785480577605:web:8aed8ee6d1a82670d4692c",
-            measurementId: "G-C3PW1X85T2"
-        };
-        
-        const appId = 'default-audio-gallery-app';
-        const ADMIN_PASSCODE = "340";
+    const CLOUDINARY_CLOUD_NAME = "duexban9y";
+    const CLOUDINARY_UPLOAD_PRESET = "imageuploader";
+    const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`;
 
-        // --- FIREBASE GLOBALS ---
-        let app, auth, db, userId;
-        let albums = [];
-        
-        // --- APP STATE ---
-        let confirmCallback = null;
-        let passcodeCallback = null; 
-        
-        let currentFilters = { albumId: null };
-        let allAudioFiles = []; 
+    const firebaseConfig = {
+        apiKey: "AIzaSyDbaF6Gb1lNGY9PQbV_9FXa9oOpC7ZiQRU",
+        authDomain: "nodemailer-445010.firebaseapp.com",
+        projectId: "nodemailer-445010",
+        storageBucket: "nodemailer-445010.firebasestorage.app",
+        messagingSenderId: "785480577605",
+        appId: "1:785480577605:web:8aed8ee6d1a82670d4692c",
+        measurementId: "G-C3PW1X85T2"
+    };
 
-        // --- MODAL UTILITIES ---
-        function openModal(modal) {
-            const modalBackdrop = document.getElementById('modal-backdrop');
-            if (!modalBackdrop || !modal) return;
-            
-            modalBackdrop.classList.remove('hidden');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.querySelector('div').classList.remove('scale-95', 'opacity-0');
-            }, 10);
-        }
+    const APP_ID = 'default-audio-gallery-app';
+    const ADMIN_PASSCODE = "340";
 
-        function closeModal(modal) {
-            const modalBackdrop = document.getElementById('modal-backdrop');
-            if (!modalBackdrop || !modal) return;
+    // Global Firebase vars
+    let app, auth, db, userId;
+    let albums = [];
+    let allAudioFiles = [];
+    let currentFilters = { albumId: null };
+    let confirmCallback = null;
+    let passcodeCallback = null;
 
-            modal.querySelector('div').classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                
-                const allModals = document.querySelectorAll('#add-audio-modal, #manage-categories-modal, #edit-category-modal, #confirm-modal, #passcode-modal');
-                
-                let aModalIsStillOpen = false;
-                allModals.forEach(m => {
-                    if (!m.classList.contains('hidden')) {
-                        aModalIsStillOpen = true;
-                    }
-                });
+    // ---------- MODAL HELPERS ----------
+    function openModal(modal) {
+        const backdrop = document.getElementById('modal-backdrop');
+        backdrop.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.querySelector('div').classList.remove('scale-95', 'opacity-0'), 10);
+    }
 
-                if (!aModalIsStillOpen) {
-                    modalBackdrop.classList.add('hidden');
-                }
-            }, 200);
-        }
-        
-        function openConfirmModal(title, text, onConfirm) {
-            const confirmModal = document.getElementById('confirm-modal');
-            const confirmModalTitle = document.getElementById('confirm-modal-title');
-            const confirmModalText = document.getElementById('confirm-modal-text');
-            
-            confirmModalTitle.textContent = title;
-            confirmModalText.textContent = text;
-            confirmCallback = onConfirm;
-            openModal(confirmModal);
-        }
-        
-        function openPasscodeModal(onSuccess) {
-            const passcodeModal = document.getElementById('passcode-modal');
-            const passcodeError = document.getElementById('passcode-error');
-            const passcodeForm = document.getElementById('passcode-form');
-            
-            if (passcodeError) passcodeError.classList.add('hidden');
-            if (passcodeForm) passcodeForm.reset();
-            
-            passcodeCallback = onSuccess; 
-            openModal(passcodeModal);
-            
-            setTimeout(() => document.getElementById('passcode-input')?.focus(), 100);
-        }
+    function closeModal(modal) {
+        modal.querySelector('div').classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            const anyOpen = [...document.querySelectorAll('#add-audio-modal, #manage-categories-modal, #edit-category-modal, #confirm-modal, #passcode-modal')].some(m => !m.classList.contains('hidden'));
+            if (!anyOpen) document.getElementById('modal-backdrop').classList.add('hidden');
+        }, 200);
+    }
 
-        function runWithPasscodeCheck(actionToPerform) {
-            openPasscodeModal(actionToPerform);
-        }
+    function openConfirmModal(title, text, onConfirm) {
+        document.getElementById('confirm-modal-title').textContent = title;
+        document.getElementById('confirm-modal-text').textContent = text;
+        confirmCallback = onConfirm;
+        openModal(document.getElementById('confirm-modal'));
+    }
 
-        // --- FIREBASE FUNCTIONS ---
-        async function initializeFirebase() {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+    function openPasscodeModal(onSuccess) {
+        const err = document.getElementById('passcode-error');
+        err.classList.add('hidden');
+        document.getElementById('passcode-form').reset();
+        passcodeCallback = onSuccess;
+        openModal(document.getElementById('passcode-modal'));
+        setTimeout(() => document.getElementById('passcode-input').focus(), 100);
+    }
 
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        console.log('User is signed in:', user.uid);
-                        userId = user.uid;
-                        loadAlbums();
-                        loadAudioFiles();
-                    } else {
-                        console.log('User is signed out, signing in...');
-                        signInUser();
-                    }
-                });
-            } catch (e) {
-                console.error("Error initializing Firebase: ", e);
-                const galleryGrid = document.getElementById('gallery-grid');
-                if(galleryGrid) galleryGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">Error connecting to the database.</p>`;
+    function runWithPasscodeCheck(action) {
+        openPasscodeModal(action);
+    }
+
+    // ---------- FIREBASE ----------
+    async function initFirebase() {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                userId = user.uid;
+                loadAlbums();
+                loadAudioFiles();
+            } else {
+                signInAnonymously(auth).catch(console.error);
             }
-        }
-        
-        async function signInUser() {
-             try {
-                 await signInAnonymously(auth);
-             } catch (error) {
-                 console.error("Firebase sign-in error:", error);
-             }
-         }
-
-        // --- ALBUM FUNCTIONS ---
-        function loadAlbums() {
-            if (!db || !userId) return;
-            
-            const collectionPath = `artifacts/${appId}/public/data/albums`;
-            const q = query(collection(db, collectionPath));
-            
-            onSnapshot(q, (querySnapshot) => {
-                const list = [];
-                querySnapshot.forEach((doc) => {
-                    list.push({ id: doc.id, ...doc.data() });
-                });
-                
-                list.sort((a, b) => a.name.localeCompare(b.name));
-                albums = list;
-                
-                renderCategoryList(list); 
-                populateDropdowns();
-                renderFilterDropdown(list);
-            }, (error) => {
-                console.error(`Error loading albums: `, error);
-            });
-        }
-        
-        function renderCategoryList(list) {
-            const albumsListBody = document.getElementById('albums-list-body');
-            if (!albumsListBody) return;
-
-            if (list.length === 0) {
-                albumsListBody.innerHTML = `<tr><td colspan="2" class="text-center p-4 text-gray-500 dark:text-gray-400">No albums found. Add one above!</td></tr>`;
-                return;
-            }
-            
-            albumsListBody.innerHTML = list.map(item => `
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-white truncate" title="${item.name}">
-                        ${item.name}
-                    </td>
-                    <td class="px-4 py-3">
-                        <div class="flex gap-3 text-lg justify-end">
-                            <button data-edit-id="${item.id}" data-edit-name="${item.name}" class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400" title="Edit">
-                                <iconify-icon icon="ph:pencil-simple-bold"></iconify-icon>
-                            </button>
-                            <button data-delete-id="${item.id}" data-delete-name="${item.name}" class="text-gray-500 hover:text-red-600 dark:hover:text-red-400" title="Delete">
-                                <iconify-icon icon="ph:trash-simple-bold"></iconify-icon>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        async function addAlbum(name) {
-            if (!db || !userId) return;
-            const collectionPath = `artifacts/${appId}/public/data/albums`;
-            try {
-                await addDoc(collection(db, collectionPath), { name });
-                // ADDED: Clear the input field on success
-                document.getElementById('new-album-name').value = '';
-            } catch (e) {
-                console.error("Error adding document: ", e);
-            }
-        }
-        
-        async function updateAlbum(id, newName) {
-            if (!db || !userId) return;
-            const docPath = `artifacts/${appId}/public/data/albums/${id}`;
-            try {
-                await updateDoc(doc(db, docPath), { name: newName });
-                // ADDED: Close the modal on success
-                closeModal(document.getElementById('edit-category-modal'));
-            } catch (e) {
-                console.error("Error updating document: ", e);
-            }
-        }
-
-        async function deleteAlbum(id) {
-            if (!db || !userId) return;
-            const docPath = `artifacts/${appId}/public/data/albums/${id}`;
-            try {
-                await deleteDoc(doc(db, docPath));
-            } catch (e) {
-                console.error("Error deleting document: ", e);
-            }
-        }
-
-        // --- AUDIO FUNCTIONS ---
-        function loadAudioFiles() {
-            if (!db || !userId) return;
-
-            const searchInput = document.getElementById('search-input');
-            const galleryGrid = document.getElementById('gallery-grid');
-            const galleryLoading = document.getElementById('gallery-loading');
-            if (!searchInput || !galleryGrid || !galleryLoading) return;
-
-            const collectionPath = `artifacts/${appId}/public/data/audio`;
-            let q = query(collection(db, collectionPath), orderBy("createdAt", "desc"));
-
-            if (currentFilters.albumId) {
-                q = query(q, where("albumId", "==", currentFilters.albumId));
-            }
-
-            onSnapshot(q, (querySnapshot) => {
-                const audioList = [];
-                querySnapshot.forEach((doc) => {
-                    audioList.push({ id: doc.id, ...doc.data() });
-                });
-                
-                allAudioFiles = audioList; 
-                
-                const searchTerm = searchInput.value.trim().toLowerCase();
-                if (searchTerm) {
-                    const filteredAudio = allAudioFiles.filter(audio => {
-                        const album = albums.find(a => a.id === audio.albumId);
-                        const albumName = album ? album.name.toLowerCase() : "";
-                        const title = audio.title ? audio.title.toLowerCase() : "";
-                        
-                        return albumName.includes(searchTerm) || title.includes(searchTerm);
-                    });
-                    renderGallery(filteredAudio);
-                } else {
-                    renderGallery(allAudioFiles);
-                }
-                
-                galleryLoading.classList.add('hidden');
-            }, (error) => {
-                console.error("Error loading audio files: ", error);
-                galleryGrid.innerHTML = `<p class="text-red-500 col-span-full text-center">Error loading audio files.</p>`;
-            });
-        }
-        
-        function renderGallery(audioFiles) {
-            const galleryGrid = document.getElementById('gallery-grid');
-            if (!galleryGrid) return;
-
-            if (audioFiles.length === 0) {
-                galleryGrid.innerHTML = `<p class="text-gray-500 dark:text-gray-400 col-span-full text-center">No audio files found. Try adjusting your filters!</p>`;
-                return;
-            }
-            
-            galleryGrid.innerHTML = audioFiles.map(audio => {
-                const album = albums.find(a => a.id === audio.albumId);
-                const albumName = album ? album.name : "Uncategorized";
-                const titleName = audio.title || "Untitled";
-                
-                return `
-                <div class="audio-card" data-audio-id="${audio.id}">
-                    <div class="top-row">
-                        <div class="text-group">
-                            <span class="title">${titleName}</span>
-                            <span class="subtitle">${albumName}</span>
-                        </div>
-                        <div class="icon-group">
-                            <button class="icon-btn trash" title="Delete" data-delete-audio-id="${audio.id}">
-                                <iconify-icon icon="ph:trash-simple-bold"></iconify-icon>
-                            </button>
-                            <button class="icon-btn download" title="Download" data-download-audio-url="${audio.audioUrl}" data-download-title="${titleName}">
-                                <iconify-icon icon="ph:download-simple-bold"></iconify-icon>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="custom-audio-player text-gray-800 dark:text-gray-200 mt-2">
-                        <div class="progress-bar-wrapper">
-                            <div class="progress-bar-fill" style="width: 0%;">
-                                <div class="progress-bar-thumb"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="time-display flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1 px-1">
-                            <span class="current-time">0:00</span>
-                            <span class="total-time">0:00</span>
-                        </div>
-
-                        <div class="controls-container flex justify-between items-center mt-2">
-                            <button class="control-btn loop-btn text-blue-500 hover:text-blue-600" title="Toggle Loop">
-                                <iconify-icon icon="ph:repeat-bold" class="text-xl"></iconify-icon>
-                            </button>
-                            
-                            <button class="play-pause-btn bg-blue-500 hover:bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-transform hover:scale-105" title="Play">
-                                <iconify-icon icon="ph:play-bold" class="text-3xl"></iconify-icon>
-                            </button>
-                        </div>
-                    </div>
-
-                    <audio class="hidden-audio" src="${audio.audioUrl}" preload="metadata" loop></audio>
-                </div>
-                `;
-            }).join('');
-
-            initAudioPlayers();
-        }
-        
-        async function deleteAudio(id) {
-            if (!db || !userId) return;
-            const docPath = `artifacts/${appId}/public/data/audio/${id}`;
-            try {
-                await deleteDoc(doc(db, docPath));
-            } catch (e) {
-                console.error("Error deleting audio: ", e);
-            }
-        }
-
-        // --- HELPER FUNCTIONS ---
-        function populateDropdowns() {
-            const albumSelect = document.getElementById('album-select');
-            if (!albumSelect) return;
-
-            albumSelect.innerHTML = '<option value="" disabled selected>Select an album</option>';
-            albums.forEach(album => {
-                albumSelect.innerHTML += `<option value="${album.id}">${album.name}</option>`;
-            });
-            if (albums.length === 0) {
-                 albumSelect.innerHTML = '<option value="" disabled>No albums found. Please add one.</option>';
-            }
-        }
-        
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-        
-        /* * FIXED: Removed a duplicated, incomplete 'handleAudioUpload' function 
-         * that was nested inside another function definition, causing the 
-         * 'Unexpected end of input' syntax error.
-         */
-        
-        async function handleAudioUpload(e) {
-            e.preventDefault();
-            
-            const fileUpload = document.getElementById('file-upload');
-            const albumSelect = document.getElementById('album-select');
-            const audioTitleInput = document.getElementById('audio-title'); 
-            const uploadError = document.getElementById('upload-error');
-            const uploadBtnText = document.getElementById('upload-btn-text');
-            const uploadSpinner = document.getElementById('upload-spinner');
-            const submitUploadBtn = document.getElementById('submit-upload-btn');
-            const uploadForm = document.getElementById('upload-form');
-            
-            const files = fileUpload.files; // Get all files
-            const albumId = albumSelect.value;
-            const singleTitle = audioTitleInput.value.trim(); 
-            
-            if (files.length === 0 || !albumId) { 
-                uploadError.textContent = "Please select at least one file and an album.";
-                uploadError.classList.remove('hidden');
-                return;
-            }
-            
-            // Check for title only if a single file is selected
-            if (files.length === 1 && !singleTitle) {
-                uploadError.textContent = "Please enter a title for the audio file.";
-                uploadError.classList.remove('hidden');
-                return;
-            }
-            
-            uploadError.classList.add('hidden');
-            uploadBtnText.classList.add('hidden');
-            uploadSpinner.classList.remove('hidden');
-            submitUploadBtn.disabled = true;
-
-            try {
-                // Create an array of upload promises
-                const uploadPromises = Array.from(files).map(async (file) => {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-                    const response = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-                    if (!response.ok) {
-                        throw new Error(`Upload failed for ${file.name}: ${response.statusText}`);
-                    }
-                    
-                    const data = await response.json();
-                    const audioUrl = data.secure_url; 
-
-                    // Determine the title
-                    let title;
-                    if (files.length > 1) {
-                        // Use filename (without extension) for batch uploads
-                        title = file.name.split('.').slice(0, -1).join('.') || file.name;
-                    } else {
-                        // Use the user-provided title for single uploads
-                        title = singleTitle;
-                    }
-
-                    // Return the data to be added to Firestore
-                    return {
-                        audioUrl, 
-                        albumId,
-                        title, 
-                        createdAt: serverTimestamp()
-                    };
-                });
-
-                // Wait for all uploads to complete
-                const firestoreDocs = await Promise.all(uploadPromises);
-
-                // Now add all docs to Firestore
-                const collectionPath = `artifacts/${appId}/public/data/audio`;
-                const addDocPromises = firestoreDocs.map(docData => 
-                    addDoc(collection(db, collectionPath), docData)
-                );
-                
-                // Wait for all Firestore writes to complete
-                await Promise.all(addDocPromises);
-                
-                // Reset form and close modal on success
-                uploadForm.reset();
-                // Manually trigger change event to reset file input labels
-                fileUpload.dispatchEvent(new Event('change')); 
-                uploadError.classList.add('hidden');
-                closeModal(document.getElementById('add-audio-modal'));
-                
-            } catch (err) {
-                console.error("Upload failed: ", err);
-                uploadError.textContent = `Upload failed: ${err.message}`;
-                uploadError.classList.remove('hidden');
-            } finally {
-                uploadBtnText.classList.remove('hidden');
-                uploadSpinner.classList.add('hidden');
-                submitUploadBtn.disabled = false;
-            }
-        }
-        
-        function initAudioPlayers() {
-            const audioElements = document.querySelectorAll('.hidden-audio:not(.audio-initialized)'); 
-            
-            audioElements.forEach(audio => {
-                const card = audio.closest('.audio-card');
-                if (!card) return;
-
-                const playBtn = card.querySelector('.play-pause-btn');
-                const playIcon = playBtn?.querySelector('iconify-icon');
-                const loopBtn = card.querySelector('.loop-btn');
-                const loopIcon = loopBtn?.querySelector('iconify-icon');
-                const currentTimeEl = card.querySelector('.current-time');
-                const totalTimeEl = card.querySelector('.total-time');
-                const progressContainer = card.querySelector('.progress-bar-fill'); 
-                const waveformWrapper = card.querySelector('.progress-bar-wrapper'); 
-
-                if (!playBtn || !playIcon || !loopBtn || !loopIcon || !currentTimeEl || !totalTimeEl || !progressContainer || !waveformWrapper) return;
-
-                audio.addEventListener('loadedmetadata', () => {
-                    totalTimeEl.textContent = formatTime(audio.duration);
-                });
-
-                audio.addEventListener('timeupdate', () => {
-                    currentTimeEl.textContent = formatTime(audio.currentTime);
-                    const progress = (audio.currentTime / audio.duration) * 100;
-                    progressContainer.style.width = `${progress}%`;
-                });
-
-                audio.addEventListener('ended', () => {
-                    playIcon.setAttribute('icon', 'ph:play-bold');
-                    if (!audio.loop) {
-                        progressContainer.style.width = '0%';
-                        currentTimeEl.textContent = '0:00';
-                    }
-                });
-
-                playBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (audio.paused) {
-                        audio.play();
-                        playIcon.setAttribute('icon', 'ph:pause-bold');
-                    } else {
-                        audio.pause();
-                        playIcon.setAttribute('icon', 'ph:play-bold');
-                    }
-                });
-
-                loopBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    audio.loop = !audio.loop;
-                    loopIcon.setAttribute('icon', audio.loop ? 'ph:repeat-bold' : 'ph:repeat-off-bold');
-                    loopBtn.classList.toggle('text-blue-500');
-                });
-
-                const handleSeek = (e) => {
-                    if (!audio.duration) return;
-                    const rect = waveformWrapper.getBoundingClientRect();
-                    let clientX = e.clientX || (e.touches?.[0]?.clientX);
-                    let offsetX = Math.max(0, Math.min(clientX - rect.left, rect.width));
-                    const percentage = offsetX / rect.width;
-                    audio.currentTime = audio.duration * percentage;
-                };
-
-                const startSeek = (e) => {
-                    handleSeek(e);
-                    document.addEventListener('mousemove', handleSeek);
-                    document.addEventListener('mouseup', () => {
-                        document.removeEventListener('mousemove', handleSeek);
-                    });
-                    e.preventDefault();
-                };
-
-                waveformWrapper.addEventListener('mousedown', startSeek);
-                waveformWrapper.addEventListener('click', handleSeek);
-
-                audio.classList.add('audio-initialized'); 
-            });
-        }
-
-        async function forceDownload(audioUrl, filename = 'gallery-audio.mp3') {
-            const a = document.createElement('a');
-            a.href = audioUrl.replace('/upload/', '/upload/fl_attachment/');
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-        
-        function renderFilterDropdown(albums) {
-            const albumsDropdownList = document.getElementById('albums-dropdown-list');
-            if (!albumsDropdownList) return;
-
-            let albumsHtml = `
-                <button class="dropdown-item dropdown-item-all-albums" data-filter-type="albums" data-filter-id="" data-filter-name="All Albums">
-                    All Albums
-                </button>
-            `;
-            
-            albums.forEach(album => {
-                albumsHtml += `
-                    <button class="dropdown-item" data-filter-type="albums" data-filter-id="${album.id}" data-filter-name="${album.name}">
-                        ${album.name}
-                    </button>
-                `;
-            });
-
-            albumsDropdownList.innerHTML = albumsHtml;
-        }
-
-        // --- MAIN SCRIPT EXECUTION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeFirebase();
-
-            // Theme Toggle
-            const themeToggleBtn = document.getElementById('theme-toggle-btn');
-            const savedTheme = localStorage.getItem('theme');
-            const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            
-            if (isDark) document.documentElement.classList.add('dark');
-            
-            themeToggleBtn?.addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
-                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-            });
-
-            // Modal Event Listeners
-            document.querySelectorAll('[data-close-modal]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    closeModal(document.getElementById(btn.dataset.closeModal));
-                });
-            });
-
-            document.getElementById('add-audio-btn')?.addEventListener('click', () => {
-                runWithPasscodeCheck(() => openModal(document.getElementById('add-audio-modal')));
-            });
-
-            document.getElementById('upload-form')?.addEventListener('submit', handleAudioUpload);
-            document.getElementById('add-album-form')?.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('new-album-name').value.trim();
-                if (name) addAlbum(name);
-                // The form reset is now handled inside addAlbum()
-            });
-
-            // FIXED: Event listener for "Customize Albums" button
-            document.getElementById('customize-btn')?.addEventListener('click', () => {
-                const addModal = document.getElementById('add-audio-modal');
-                const manageModal = document.getElementById('manage-categories-modal');
-                
-                if (addModal) closeModal(addModal);
-                // No need to re-check passcode, just open the manage modal
-                if (manageModal) openModal(manageModal);
-            });
-
-            document.getElementById('edit-category-form')?.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const id = document.getElementById('edit-category-id').value;
-                const newName = document.getElementById('edit-category-name').value.trim();
-                if (id && newName) updateAlbum(id, newName);
-                // The modal close is now handled inside updateAlbum()
-            });
-
-            // ADDED: Event listener for file input to show selected file names/count
-            document.getElementById('file-upload')?.addEventListener('change', (e) => {
-                const fileInput = e.target;
-                const fileUploadText = document.getElementById('file-upload-text');
-                const fileUploadFilename = document.getElementById('file-upload-filename');
-                const audioTitleLabel = document.querySelector('label[for="audio-title"]');
-                const audioTitleInput = document.getElementById('audio-title');
-
-                if (fileInput.files.length > 1) {
-                    fileUploadText.textContent = `${fileInput.files.length} files selected`;
-                    fileUploadFilename.textContent = `Batch upload: Titles will be set from filenames.`;
-                    // Optionally hide or disable the manual title input
-                    if (audioTitleLabel) audioTitleLabel.classList.add('opacity-50');
-                    if (audioTitleInput) audioTitleInput.disabled = true;
-                    if (audioTitleInput) audioTitleInput.placeholder = 'Disabled for batch upload';
-                } else if (fileInput.files.length === 1) {
-                    fileUploadText.textContent = '1 file selected';
-                    fileUploadFilename.textContent = fileInput.files[0].name;
-                    // Re-enable title input
-                    if (audioTitleLabel) audioTitleLabel.classList.remove('opacity-50');
-                    if (audioTitleInput) audioTitleInput.disabled = false;
-                    if (audioTitleInput) audioTitleInput.placeholder = "e.g., 'Weekly sync notes'";
-                } else {
-                    fileUploadText.textContent = 'Click to choose audio files';
-                    fileUploadFilename.textContent = '';
-                    // Re-enable title input
-                    if (audioTitleLabel) audioTitleLabel.classList.remove('opacity-50');
-                    if (audioTitleInput) audioTitleInput.disabled = false;
-                    if (audioTitleInput) audioTitleInput.placeholder = "e.g., 'Weekly sync notes'";
-                }
-            });
-
-            document.getElementById('passcode-form')?.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const passcodeModal = document.getElementById('passcode-modal');
-                const passcodeError = document.getElementById('passcode-error');
-                const passcodeForm = document.getElementById('passcode-form');
-
-                if (document.getElementById('passcode-input').value === ADMIN_PASSCODE) {
-                    if (passcodeError) passcodeError.classList.add('hidden');
-                    if (passcodeModal) closeModal(passcodeModal);
-                    if (passcodeForm) passcodeForm.reset();
-                    passcodeCallback?.();
-                } else {
-                    // ADDED: Show error on wrong passcode
-                    if (passcodeError) passcodeError.classList.remove('hidden');
-                }
-            });
-
-            // Gallery Events
-            document.getElementById('gallery-grid')?.addEventListener('click', (e) => {
-                const deleteBtn = e.target.closest('[data-delete-audio-id]');
-                if (deleteBtn) {
-                    runWithPasscodeCheck(() => {
-                        openConfirmModal('Delete Audio', 'Are you sure?', () => deleteAudio(deleteBtn.dataset.deleteAudioId));
-                    });
-                }
-                
-                const downloadBtn = e.target.closest('[data-download-audio-url]');
-                if (downloadBtn) {
-                    forceDownload(downloadBtn.dataset.downloadAudioUrl, `${downloadBtn.dataset.downloadTitle}.mp3`);
-                }
-            });
-
-            // Dropdowns
-            document.addEventListener('click', (e) => {
-                const toggleBtn = e.target.closest('[data-dropdown-toggle]');
-                if (toggleBtn) {
-                    document.getElementById(toggleBtn.dataset.dropdownToggle).classList.toggle('hidden');
-                }
-            });
-
-            document.getElementById('albums-dropdown-list')?.addEventListener('click', (e) => {
-                const filterBtn = e.target.closest('[data-filter-id]');
-                if (filterBtn) {
-                    currentFilters.albumId = filterBtn.dataset.filterId || null;
-                    document.getElementById('albums-filter-text').textContent = filterBtn.dataset.filterName;
-                    loadAudioFiles();
-                }
-            });
-
-            // Search
-            document.getElementById('search-input')?.addEventListener('input', loadAudioFiles);
-            
-            // ADDED: Event listeners for "Manage Albums" modal (Edit/Delete buttons)
-            document.getElementById('albums-list-container')?.addEventListener('click', (e) => {
-                const editBtn = e.target.closest('[data-edit-id]');
-                const deleteBtn = e.target.closest('[data-delete-id]');
-
-                if (editBtn) {
-                    // REMOVED: Passcode check for editing an album
-                    const { editId, editName } = editBtn.dataset;
-                    const editModal = document.getElementById('edit-category-modal');
-                        const idInput = document.getElementById('edit-category-id');
-                        const nameInput = document.getElementById('edit-category-name');
-                        
-                    if (editModal && idInput && nameInput) {
-                        idInput.value = editId;
-                        nameInput.value = editName;
-                        openModal(editModal);
-                        nameInput.focus();
-                    }
-                }
-                
-                if (deleteBtn) {
-                    // REMOVED: Passcode check for deleting an album
-                    const { deleteId, deleteName } = deleteBtn.dataset;
-                    openConfirmModal(
-                        `Delete "${deleteName}"`, 
-                        'Are you sure? This will not delete the audio files, but they will become uncategorized.', 
-                        () => deleteAlbum(deleteId)
-                    );
-                }
-            });
         });
-    </script>
+    }
 
+    // ---------- ALBUMS ----------
+    function loadAlbums() {
+        const colPath = `artifacts/${APP_ID}/public/data/albums`;
+        onSnapshot(collection(db, colPath), snap => {
+            const list = [];
+            snap.forEach(d => list.push({id: d.id, ...d.data()}));
+            list.sort((a, b) => a.name.localeCompare(b.name));
+            albums = list;
+            renderAlbumList(list);
+            populateAlbumDropdowns();
+            renderFilterDropdown(list);
+        });
+    }
+
+    function renderAlbumList(list) {
+        const tbody = document.getElementById('albums-list-body');
+        if (!list.length) {
+            tbody.innerHTML = `<tr><td colspan="2" class="text-center p-4 text-gray-500 dark:text-gray-400">No albums found. Add one above!</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = list.map(a => `
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <td class="px-4 py-3 font-medium text-gray-900 dark:text-white truncate" title="${a.name}">${a.name}</td>
+                <td class="px-4 py-3">
+                    <div class="flex gap-3 text-lg justify-end">
+                        <button data-edit-id="${a.id}" data-edit-name="${a.name}" class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400" title="Edit">
+                            <iconify-icon icon="ph:pencil-simple-bold"></iconify-icon>
+                        </button>
+                        <button data-delete-id="${a.id}" data-delete-name="${a.name}" class="text-gray-500 hover:text-red-600 dark:hover:text-red-400" title="Delete">
+                            <iconify-icon icon="ph:trash-simple-bold"></iconify-icon>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function addAlbum(name) {
+        const colPath = `artifacts/${APP_ID}/public/data/albums`;
+        await addDoc(collection(db, colPath), {name});
+        document.getElementById('new-album-name').value = '';
+    }
+
+    async function updateAlbum(id, newName) {
+        const docPath = `artifacts/${APP_ID}/public/data/albums/${id}`;
+        await updateDoc(doc(db, docPath), {name: newName});
+        closeModal(document.getElementById('edit-category-modal'));
+    }
+
+    async function deleteAlbum(id) {
+        const docPath = `artifacts/${APP_ID}/public/data/albums/${id}`;
+        await deleteDoc(doc(db, docPath));
+    }
+
+    // ---------- AUDIO ----------
+    function loadAudioFiles() {
+        const search = document.getElementById('search-input').value.trim().toLowerCase();
+        const colPath = `artifacts/${APP_ID}/public/data/audio`;
+        let q = query(collection(db, colPath), orderBy("createdAt", "desc"));
+        if (currentFilters.albumId) q = query(q, where("albumId", "==", currentFilters.albumId));
+
+        onSnapshot(q, snap => {
+            const list = [];
+            snap.forEach(d => list.push({id: d.id, ...d.data()}));
+            allAudioFiles = list;
+
+            const filtered = search
+                ? list.filter(a => {
+                    const alb = albums.find(x => x.id === a.albumId);
+                    const albName = alb ? alb.name.toLowerCase() : "";
+                    const title = (a.title || "").toLowerCase();
+                    return albName.includes(search) || title.includes(search);
+                })
+                : list;
+
+            renderGallery(filtered);
+            document.getElementById('gallery-loading').classList.add('hidden');
+        });
+    }
+
+    function renderGallery(list) {
+        const grid = document.getElementById('gallery-grid');
+        if (!list.length) {
+            grid.innerHTML = `<p class="text-gray-500 dark:text-gray-400 col-span-full text-center">No audio files found. Try adjusting your filters!</p>`;
+            return;
+        }
+
+        grid.innerHTML = list.map(a => {
+            const alb = albums.find(x => x.id === a.albumId) || {name: "Uncategorized"};
+            const title = a.title || "Untitled";
+            return `
+            <div class="audio-card" data-audio-id="${a.id}">
+                <div class="top-row">
+                    <div class="text-group">
+                        <span class="title">${title}</span>
+                        <span class="subtitle">${alb.name}</span>
+                    </div>
+                    <div class="icon-group">
+                        <button class="icon-btn trash" title="Delete" data-delete-audio-id="${a.id}">
+                            <iconify-icon icon="ph:trash-simple-bold"></iconify-icon>
+                        </button>
+                        <button class="icon-btn download" title="Download" data-download-audio-url="${a.audioUrl}" data-download-title="${title}">
+                            <iconify-icon icon="ph:download-simple-bold"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="custom-audio-player text-gray-800 dark:text-gray-200 mt-2">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar-fill" style="width:0%">
+                            <div class="progress-bar-thumb"></div>
+                        </div>
+                    </div>
+                    <div class="time-display flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1 px-1">
+                        <span class="current-time">0:00</span>
+                        <span class="total-time">0:00</span>
+                    </div>
+                    <div class="controls-container flex justify-between items-center mt-2">
+                        <button class="control-btn loop-btn text-blue-500 hover:text-blue-600" title="Toggle Loop">
+                            <iconify-icon icon="ph:repeat-bold" class="text-xl"></iconify-icon>
+                        </button>
+                        <button class="play-pause-btn bg-blue-500 hover:bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-transform hover:scale-105" title="Play">
+                            <iconify-icon icon="ph:play-bold" class="text-3xl"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <audio class="hidden-audio" src="${a.audioUrl}" preload="metadata"></audio>
+            </div>`;
+        }).join('');
+
+        initAudioPlayers();
+    }
+
+    async function deleteAudio(id) {
+        const docPath = `artifacts/${APP_ID}/public/data/audio/${id}`;
+        await deleteDoc(doc(db, docPath));
+    }
+
+    // ---------- UI HELPERS ----------
+    function populateAlbumDropdowns() {
+        const sel = document.getElementById('album-select');
+        sel.innerHTML = '<option value="" disabled selected>Select an album</option>';
+        albums.forEach(a => sel.innerHTML += `<option value="${a.id}">${a.name}</option>`);
+        if (!albums.length) sel.innerHTML = '<option value="" disabled>No albums found. Please add one.</option>';
+    }
+
+    function renderFilterDropdown(list) {
+        const container = document.getElementById('albums-dropdown-list');
+        let html = `<button class="dropdown-item dropdown-item-all-albums" data-filter-id="">All Albums</button>`;
+        list.forEach(a => html += `<button class="dropdown-item" data-filter-id="${a.id}">${a.name}</button>`);
+        container.innerHTML = html;
+    }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // ---------- AUDIO PLAYER ----------
+    function initAudioPlayers() {
+        document.querySelectorAll('.hidden-audio:not(.audio-initialized)').forEach(audio => {
+            const card = audio.closest('.audio-card');
+            const playBtn = card.querySelector('.play-pause-btn');
+            const playIcon = playBtn.querySelector('iconify-icon');
+            const loopBtn = card.querySelector('.loop-btn');
+            const loopIcon = loopBtn.querySelector('iconify-icon');
+            const cur = card.querySelector('.current-time');
+            const tot = card.querySelector('.total-time');
+            const fill = card.querySelector('.progress-bar-fill');
+            const wrapper = card.querySelector('.progress-bar-wrapper');
+
+            audio.addEventListener('loadedmetadata', () => tot.textContent = formatTime(audio.duration));
+            audio.addEventListener('timeupdate', () => {
+                cur.textContent = formatTime(audio.currentTime);
+                fill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+            });
+            audio.addEventListener('ended', () => {
+                playIcon.setAttribute('icon', 'ph:play-bold');
+                if (!audio.loop) {
+                    fill.style.width = '0%';
+                    cur.textContent = '0:00';
+                }
+            });
+
+            playBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                if (audio.paused) {
+                    audio.play();
+                    playIcon.setAttribute('icon', 'ph:pause-bold');
+                } else {
+                    audio.pause();
+                    playIcon.setAttribute('icon', 'ph:play-bold');
+                }
+            });
+
+            loopBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                audio.loop = !audio.loop;
+                loopIcon.setAttribute('icon', audio.loop ? 'ph:repeat-bold' : 'ph:repeat-off-bold');
+                loopBtn.classList.toggle('text-blue-500', audio.loop);
+            });
+
+            const seek = e => {
+                if (!audio.duration) return;
+                const rect = wrapper.getBoundingClientRect();
+                const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
+                const pct = Math.max(0, Math.min(x / rect.width, 1));
+                audio.currentTime = audio.duration * pct;
+            };
+            wrapper.addEventListener('mousedown', e => {
+                seek(e);
+                const move = ev => seek(ev);
+                const up = () => {
+                    document.removeEventListener('mousemove', move);
+                    document.removeEventListener('mouseup', up);
+                };
+                document.addEventListener('mousemove', move);
+                document.addEventListener('mouseup', up);
+            });
+            wrapper.addEventListener('click', seek);
+
+            audio.classList.add('audio-initialized');
+        });
+    }
+
+    async function forceDownload(url, name) {
+        const a = document.createElement('a');
+        a.href = url.replace('/upload/', '/upload/fl_attachment/');
+        a.download = name;
+        a.click();
+    }
+
+    // ---------- UPLOAD ----------
+    async function handleUpload(e) {
+        e.preventDefault();
+        const files = document.getElementById('file-upload').files;
+        const albumId = document.getElementById('album-select').value;
+        const singleTitle = document.getElementById('audio-title').value.trim();
+        const errEl = document.getElementById('upload-error');
+        const btnText = document.getElementById('upload-btn-text');
+        const spinner = document.getElementById('upload-spinner');
+        const submitBtn = document.getElementById('submit-upload-btn');
+
+        if (!files.length || !albumId) {
+            errEl.textContent = "Select at least one file and an album.";
+            errEl.classList.remove('hidden');
+            return;
+        }
+        if (files.length === 1 && !singleTitle) {
+            errEl.textContent = "Enter a title for the single file.";
+            errEl.classList.remove('hidden');
+            return;
+        }
+
+        errEl.classList.add('hidden');
+        btnText.classList.add('hidden');
+        spinner.classList.remove('hidden');
+        submitBtn.disabled = true;
+
+        try {
+            const uploads = Array.from(files).map(async file => {
+                const fd = new FormData();
+                fd.append('file', file);
+                fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: fd});
+                if (!res.ok) throw new Error(res.statusText);
+                const data = await res.json();
+
+                const title = files.length > 1
+                    ? file.name.split('.').slice(0, -1).join('.') || file.name
+                    : singleTitle;
+
+                return {audioUrl: data.secure_url, albumId, title, createdAt: serverTimestamp()};
+            });
+
+            const docs = await Promise.all(uploads);
+            const colPath = `artifacts/${APP_ID}/public/data/audio`;
+            await Promise.all(docs.map(d => addDoc(collection(db, colPath), d)));
+
+            document.getElementById('upload-form').reset();
+            document.getElementById('file-upload').dispatchEvent(new Event('change'));
+            closeModal(document.getElementById('add-audio-modal'));
+        } catch (er) {
+            errEl.textContent = `Upload failed: ${er.message}`;
+            errEl.classList.remove('hidden');
+        } finally {
+            btnText.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            submitBtn.disabled = false;
+        }
+    }
+
+    // ---------- DOM READY ----------
+    document.addEventListener('DOMContentLoaded', () => {
+        initFirebase();
+
+        // ----- THEME -----
+        const themeBtn = document.getElementById('theme-toggle-btn');
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // ----- FULLSCREEN -----
+        const fsBtn = document.getElementById('fullscreen-toggle-btn');
+        const enterIcon = document.getElementById('fullscreen-icon-enter');
+        const exitIcon = document.getElementById('fullscreen-icon-exit');
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                enterIcon.classList.add('hidden');
+                exitIcon.classList.remove('hidden');
+            } else {
+                document.exitFullscreen();
+                exitIcon.classList.add('hidden');
+                enterIcon.classList.remove('hidden');
+            }
+        }
+        fsBtn.addEventListener('click', toggleFullscreen);
+        document.addEventListener('fullscreenchange', () => {
+            const isFs = !!document.fullscreenElement;
+            enterIcon.classList.toggle('hidden', isFs);
+            exitIcon.classList.toggle('hidden', !isFs);
+        });
+
+        // ----- MODAL CLOSE -----
+        document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', () => closeModal(document.getElementById(b.dataset.closeModal))));
+
+        // ----- ADD AUDIO -----
+        document.getElementById('add-audio-btn').addEventListener('click', () => runWithPasscodeCheck(() => openModal(document.getElementById('add-audio-modal'))));
+        document.getElementById('upload-form').addEventListener('submit', handleUpload);
+
+        // ----- CUSTOMIZE ALBUMS -----
+        document.getElementById('customize-btn').addEventListener('click', () => {
+            closeModal(document.getElementById('add-audio-modal'));
+            openModal(document.getElementById('manage-categories-modal'));
+        });
+
+        // ----- ADD ALBUM -----
+        document.getElementById('add-album-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const name = document.getElementById('new-album-name').value.trim();
+            if (name) addAlbum(name);
+        });
+
+        // ----- EDIT ALBUM -----
+        document.getElementById('edit-category-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const id = document.getElementById('edit-category-id').value;
+            const name = document.getElementById('edit-category-name').value.trim();
+            if (id && name) updateAlbum(id, name);
+        });
+
+        // ----- FILE INPUT UI -----
+        document.getElementById('file-upload').addEventListener('change', e => {
+            const files = e.target.files;
+            const txt = document.getElementById('file-upload-text');
+            const nameEl = document.getElementById('file-upload-filename');
+            const titleLabel = document.querySelector('label[for="audio-title"]');
+            const titleInp = document.getElementById('audio-title');
+
+            if (files.length > 1) {
+                txt.textContent = `${files.length} files selected`;
+                nameEl.textContent = `Batch upload – titles from filenames`;
+                titleLabel.classList.add('opacity-50');
+                titleInp.disabled = true;
+                titleInp.placeholder = 'Disabled for batch upload';
+            } else if (files.length === 1) {
+                txt.textContent = '1 file selected';
+                nameEl.textContent = files[0].name;
+                titleLabel.classList.remove('opacity-50');
+                titleInp.disabled = false;
+                titleInp.placeholder = "e.g., 'Weekly sync notes'";
+            } else {
+                txt.textContent = 'Click to choose audio files';
+                nameEl.textContent = '';
+                titleLabel.classList.remove('opacity-50');
+                titleInp.disabled = false;
+                titleInp.placeholder = "e.g., 'Weekly sync notes'";
+            }
+        });
+
+        // ----- PASSCODE -----
+        document.getElementById('passcode-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const val = document.getElementById('passcode-input').value;
+            const err = document.getElementById('passcode-error');
+            if (val === ADMIN_PASSCODE) {
+                err.classList.add('hidden');
+                closeModal(document.getElementById('passcode-modal'));
+                passcodeCallback?.();
+            } else {
+                err.classList.remove('hidden');
+            }
+        });
+
+        // ----- CONFIRM -----
+        document.getElementById('confirm-modal-cancel').addEventListener('click', () => closeModal(document.getElementById('confirm-modal')));
+        document.getElementById('confirm-modal-confirm').addEventListener('click', () => {
+            confirmCallback?.();
+            closeModal(document.getElementById('confirm-modal'));
+        });
+
+        // ----- GALLERY ACTIONS -----
+        document.getElementById('gallery-grid').addEventListener('click', e => {
+            const delBtn = e.target.closest('[data-delete-audio-id]');
+            if (delBtn) {
+                runWithPasscodeCheck(() => {
+                    openConfirmModal('Delete Audio', 'This audio file will be removed permanently.', () => deleteAudio(delBtn.dataset.deleteAudioId));
+                });
+            }
+            const dlBtn = e.target.closest('[data-download-audio-url]');
+            if (dlBtn) {
+                forceDownload(dlBtn.dataset.downloadAudioUrl, `${dlBtn.dataset.downloadTitle}.mp3`);
+            }
+        });
+
+        // ----- FILTER DROPDOWN -----
+        document.addEventListener('click', ev => {
+            const toggle = ev.target.closest('[data-dropdown-toggle]');
+            if (toggle) {
+                const dd = document.getElementById(toggle.dataset.dropdownToggle);
+                dd.classList.toggle('hidden');
+            } else {
+                document.querySelectorAll('#albums-dropdown').forEach(d => d.classList.add('hidden'));
+            }
+        });
+
+        document.getElementById('albums-dropdown-list').addEventListener('click', ev => {
+            const item = ev.target.closest('[data-filter-id]');
+            if (item) {
+                const id = item.dataset.filterId || null;
+                currentFilters.albumId = id;
+                document.getElementById('albums-filter-text').textContent = item.textContent.trim();
+                loadAudioFiles();
+                document.getElementById('albums-dropdown').classList.add('hidden');
+            }
+        });
+
+        // ----- SEARCH -----
+        document.getElementById('search-input').addEventListener('input', () => loadAudioFiles());
+
+        // ----- MANAGE ALBUMS (edit / delete) -----
+        document.getElementById('albums-list-container').addEventListener('click', ev => {
+            const edit = ev.target.closest('[data-edit-id]');
+            const del = ev.target.closest('[data-delete-id]');
+
+            if (edit) {
+                const {editId, editName} = edit.dataset;
+                document.getElementById('edit-category-id').value = editId;
+                document.getElementById('edit-category-name').value = editName;
+                openModal(document.getElementById('edit-category-modal'));
+                document.getElementById('edit-category-name').focus();
+            }
+
+            if (del) {
+                const {deleteId, deleteName} = del.dataset;
+                openConfirmModal(`Delete "${deleteName}"`, 'Audio files will become uncategorized.', () => deleteAlbum(deleteId));
+            }
+        });
+    });
+</script>
 </body>
 </html>
-
-
-
